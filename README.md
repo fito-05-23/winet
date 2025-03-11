@@ -2,7 +2,7 @@
 
 ## Descripción
 
-**Winet** es una aplicación fullstack diseñada para [breve descripción de la aplicación, por ejemplo, "gestionar una bodega de vinos", "recomendar vinos basados en preferencias del usuario", etc.]. El proyecto está estructurado en dos partes principales: frontend y backend, con una carpeta dedicada a la documentación del proceso de desarrollo.
+**Winet** es una aplicación fullstack diseñada para administrar y gestionar la cuenta de los usuario de la Empresa Winet Servicios de Internet. El proyecto está estructurado en dos partes principales: frontend y backend, con una carpeta dedicada a la documentación del proceso de desarrollo.
 
 ## Tabla de Contenidos
 
@@ -20,13 +20,10 @@
   - [React](https://reactjs.org/)
   - [React Router](https://reactrouter.com/)
   - [Axios](https://axios-http.com/)
-  - [Bootstrap](https://getbootstrap.com/) (o cualquier otro framework CSS que estés usando)
 
 - **Backend:**
   - [Node.js](https://nodejs.org/)
   - [Express](https://expressjs.com/)
-  - [MongoDB](https://www.mongodb.com/) (o cualquier otra base de datos que estés usando)
-  - [Mongoose](https://mongoosejs.com/) (si estás usando MongoDB)
 
 - **Otras Herramientas:**
   - [Git](https://git-scm.com/)
@@ -67,6 +64,13 @@
 
 4. **Enviar los Cambios al Repositorio Remoto:**
   Después de asegurarte de que tu rama local está actualizada, envía tus cambios al repositorio remoto:
+
+  ```bash
+  git push origin main
+  git status
+
+
+
 
   ```bash
   git push origin main
