@@ -1,17 +1,11 @@
 winet/
 ├── backend/
-│   ├── node_modules/
-│   ├── index.js
-│   ├── package.json
-│   └── ...
-├── frontend/
-│   ├── node_modules/
-│   ├── public/
-│   ├── src/
-│   ├── package.json
-│   └── ...
-├── doc/
-│   └── architecture.md
-│   └── README.md
+│   ├── controllers/
+│   ├── doc/
+│   ├── models/
+│   ├── routes/
+│   ├── sql/
+│   ├── utils/
+├── .env
 ├── .gitignore
-└── ...
+└── server.js
