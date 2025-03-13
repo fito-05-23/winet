@@ -1,1 +1,9 @@
-"const express = require('express');\nconst app = express();\napp.get('/', (req, res) => {\n  res.send('Backend is running');\n});\napp.listen(5000, () => {\n  console.log('Server is running on port 5000');\n});" 
+// server.js
+import app from './app.js';
+
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`Servidor escuchando en http://localhost:${PORT}`);
+});
+
