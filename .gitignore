@@ -68,3 +68,5 @@ typings
 Thumbs.db
 
 backend/API-RESTFull Winet.json
+
+backend/.env
