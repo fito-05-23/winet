@@ -3,7 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import morgan from 'morgan';  
-import clientsRoutes from './routes/clients.js';
+import clientsRoutes from './routes/clientesRoutes.js';
 import errorHandler from './middlewares/errorHandler.js';
 
 dotenv.config();

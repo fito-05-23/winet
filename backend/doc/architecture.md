@@ -1,12 +1,34 @@
 winet/
 ├── backend/
-│   ├── controllers/   # funciones que manejan las solicitudes HTTP y determinan la respuesta que se envía al cliente.
-│   ├── doc/           # Documentación del proyecto
-│   ├── middlewares/   # Funciones que tienen acceso al objeto de solicitud (request)
-│   ├── models/        # Estructura de datos y la lógica de negocio de la aplicación
-│   ├── routes/        # Controlador de solicitud entrante basada en el método HTTP 
-│   ├── sql/           # Sentencias SQL  
-│   ├── utils/
+│   ├──config/
+│   │   └── db.js
+│   ├──controllers/   # funciones que manejan las solicitudes HTTP 
+│   │   ├── userController.js
+│   │   ├── clienteWinetController.js
+│   │   ├── tiendaController.js
+│   │   ├── pagoController.js
+│   │   ├── puntoController.js
+│   │   └── transaccionPuntoController.js
+│   ├──doc/           # Documentación del proyecto
+│   ├──middlewares/   # Funciones que tienen acceso al objeto de solicitud (request)
+│   │   ├── auth.js
+│   │   ├── errorHandler.js
+├── ├──models/         # Estructura de datos y la lógica de negocio de la aplicación 
+│   │   ├── user.js
+│   │   ├── clienteWinet.js
+│   │   ├── tienda.js
+│   │   ├── pago.js
+│   │   ├── punto.js
+│   │   └── transaccionPunto.js
+│   ├──routes/        # Controlador de solicitud entrante basada en el método HTTP 
+│   │   ├── userRoutes.js
+│   │   ├── clienteWinetRoutes.js
+│   │   ├── tiendaRoutes.js
+│   │   ├── pagoRoutes.js
+│   │   ├── puntoRoutes.js
+│   │   └── transaccionPuntoRoutes.js
+│   ├──sql/           # Sentencias SQL  
+│   ├──utils/
 ├── .env
 ├── .gitignore
 ├── API-RESTFull Winet.json

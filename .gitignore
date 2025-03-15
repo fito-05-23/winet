@@ -70,3 +70,5 @@ Thumbs.db
 backend/API-RESTFull Winet.json
 
 backend/.env
+
+backend/node_modules
