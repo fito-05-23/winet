@@ -72,3 +72,5 @@ backend/API-RESTFull Winet.json
 backend/.env
 
 backend/node_modules
+
+backend/generateSecret.js

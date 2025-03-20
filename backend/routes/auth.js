@@ -2,6 +2,7 @@
 import express from 'express';
 import { body } from 'express-validator';
 import { register, login, refreshToken } from '../controllers/authController.js';
+import { verifyToken, checkRole } from '../middlewares/auth.js';
 
 const router = express.Router();
 
@@ -32,6 +33,34 @@ router.post(
 
 router.post('/refresh', refreshToken);
 
+// Ruta Protegida /perfil
+router.get(
+    '/perfil',
+    verifyToken,
+    checkRole(['admin', 'user', 'operador']),
+    async (req, res) => {
+      try {
+        const userId = req.user.id;
+  
+        const userResult = await pool.query('SELECT * FROM users WHERE id = \$1', [userId]);
+        if (!userResult.rows.length) return res.status(404).json({ message: 'Usuario no encontrado' });
+  
+        const user = userResult.rows[0];
+        const userInfo = {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          role: user.role,
+        };
+  
+        res.json({ user: userInfo });
+      } catch (error) {
+        logger.error(`Error al obtener el perfil del usuario: ${error.message}`);
+        res.status(500).json({ message: 'Error en el servidor' });
+      }
+    }
+  );
+  
 export default router;
 
 

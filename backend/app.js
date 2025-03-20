@@ -28,7 +28,6 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.use(helmet());  // Seguridad HTTP
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

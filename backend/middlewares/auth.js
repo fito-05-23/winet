@@ -22,10 +22,17 @@ export const checkRole = (roles) => async (req, res, next) => {
   const { id } = req.user;
 
   try {
-    const user = await pool.query('SELECT role FROM users WHERE id = $1', [id]);
-    if (!user.rows.length) return res.status(404).json({ message: 'Usuario no encontrado' });
+    const userResult = await pool.query('SELECT role_id FROM users WHERE id = \$1', [id]);
+    if (!userResult.rows.length) return res.status(404).json({ message: 'Usuario no encontrado' });
 
-    if (!roles.includes(user.rows[0].role)) {
+    const roleId = userResult.rows[0].role_id;
+
+    const roleResult = await pool.query('SELECT name FROM roles WHERE id = \$1', [roleId]);
+    if (!roleResult.rows.length) return res.status(500).json({ message: 'Rol de usuario no encontrado' });
+
+    const roleName = roleResult.rows[0].name;
+
+    if (!roles.includes(roleName)) {
       return res.status(403).json({ message: 'Acceso prohibido' });
     }
 
@@ -35,4 +42,3 @@ export const checkRole = (roles) => async (req, res, next) => {
     res.status(500).json({ message: 'Error en el servidor' });
   }
 };
-
