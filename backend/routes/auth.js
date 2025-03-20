@@ -12,7 +12,10 @@ router.post(
     body('email').isEmail().withMessage('Debe ser un correo válido'),
     body('password').isLength({ min: 6 }).withMessage('La contraseña debe tener al menos 6 caracteres'),
     body('name').notEmpty().withMessage('El nombre es obligatorio'),
-    body('role').optional().isIn(['admin', 'user']).withMessage('Rol inválido'),
+    body('role_id')
+      .optional()
+      .isInt({ min: 1 })
+      .withMessage('El role_id debe ser un número entero válido'),
   ],
   register
 );
@@ -30,6 +33,5 @@ router.post(
 router.post('/refresh', refreshToken);
 
 export default router;
-
 
 

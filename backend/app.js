@@ -3,7 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
-import logger from './logger.js';  
+import logger from './utils/logger.js';  
 import clientsRoutes from './routes/clientesRoutes.js';
 import authRoutes from './routes/auth.js';
 import errorHandler from './middlewares/errorHandler.js';
