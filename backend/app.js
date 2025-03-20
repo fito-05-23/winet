@@ -1,9 +1,11 @@
 // app.js
 import express from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
 import dotenv from 'dotenv';
 import logger from './logger.js';  
 import clientsRoutes from './routes/clientesRoutes.js';
+import authRoutes from './routes/auth.js';
 import errorHandler from './middlewares/errorHandler.js';
 
 dotenv.config();
@@ -25,6 +27,7 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+app.use(helmet());  // Seguridad HTTP
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -36,6 +39,7 @@ app.get('/', (req, res) => {
 
 // Rutas
 app.use('/api/client', clientsRoutes);
+app.use('/api/auth', authRoutes);
 
 // Middleware de manejo de errores (debe ir al final)
 app.use(errorHandler);

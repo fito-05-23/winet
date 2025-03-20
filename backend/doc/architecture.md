@@ -3,6 +3,7 @@ winet/
 │   ├──config/
 │   │   └── db.js
 │   ├──controllers/   # funciones que manejan las solicitudes HTTP 
+│   │   ├── authController.js
 │   │   ├── userController.js
 │   │   ├── clienteWinetController.js
 │   │   ├── tiendaController.js
@@ -14,6 +15,7 @@ winet/
 │   │   ├── auth.js
 │   │   ├── errorHandler.js
 ├── ├──models/         # Estructura de datos y la lógica de negocio de la aplicación 
+│   │   ├── auth.js
 │   │   ├── user.js
 │   │   ├── clienteWinet.js
 │   │   ├── tienda.js
