@@ -22,9 +22,26 @@ CREATE TABLE public.users (
   provider VARCHAR(50) NOT NULL DEFAULT 'email',
   provider_id VARCHAR(100),
   role_id INTEGER,
+  is_active BOOLEAN NOT NULL DEFAULT FALSE, -- Indica si el usuario ha activado su cuenta
   created_at TIMESTAMP NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
   FOREIGN KEY (role_id) REFERENCES public.roles(id) ON DELETE SET NULL
+);
+
+CREATE TABLE public.activation_codes (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER NOT NULL,
+  code VARCHAR(6) NOT NULL, -- Código de 6 dígitos
+  created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE public.activation_tokens (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER NOT NULL,
+  token VARCHAR(255) UNIQUE NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE
 );
 
 CREATE TABLE public.refresh_tokens (
@@ -96,10 +113,12 @@ ALTER TABLE public.puntos ADD FOREIGN KEY (id_cliente) REFERENCES public.cliente
 ALTER TABLE public.transacciones_puntos ADD FOREIGN KEY (id_cliente) REFERENCES public.clientes_winet(id) ON DELETE CASCADE;
 ALTER TABLE public.transacciones_puntos ADD FOREIGN KEY (id_tienda) REFERENCES public.tiendas(id) ON DELETE CASCADE;
 
+
 CREATE INDEX idx_users_email ON public.users(email);
 CREATE INDEX idx_clientes_cedula ON public.clientes_winet(cedula);
 CREATE INDEX idx_clientes_codigo ON public.clientes_winet(codigo);
 CREATE INDEX idx_tiendas_nombre ON public.tiendas(nombre);
+CREATE INDEX idx_activation_tokens_token ON public.activation_tokens(token);
 
 CREATE OR REPLACE FUNCTION update_timestamp()
 RETURNS TRIGGER AS $$
@@ -123,3 +142,43 @@ FOR EACH ROW EXECUTE FUNCTION update_timestamp();
 
 CREATE TRIGGER update_puntos_timestamp BEFORE UPDATE ON public.puntos
 FOR EACH ROW EXECUTE FUNCTION update_timestamp();
+
+CREATE OR REPLACE FUNCTION activate_user(p_token VARCHAR)
+RETURNS BOOLEAN AS $$
+DECLARE
+  v_user_id INTEGER;
+BEGIN
+  -- Buscar usuario con el token
+  SELECT user_id INTO v_user_id FROM activation_tokens WHERE token = p_token;
+
+  -- Si no existe el token, retornar FALSE
+  IF v_user_id IS NULL THEN
+    RETURN FALSE;
+  END IF;
+
+  -- Activar el usuario
+  UPDATE users SET is_active = TRUE WHERE id = v_user_id;
+
+  -- Eliminar el token de activación solo si existe un usuario válido
+  DELETE FROM activation_tokens WHERE user_id = v_user_id;
+
+  RETURN TRUE;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION check_user_activation()
+RETURNS TRIGGER AS $$
+BEGIN
+  -- Verificar si el usuario está activo
+  IF NOT EXISTS (SELECT 1 FROM users WHERE id = NEW.id_user AND is_active = TRUE) THEN
+    RAISE EXCEPTION 'El usuario debe estar activado antes de ser cliente_winet';
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_check_user_activation
+BEFORE INSERT OR UPDATE ON public.clientes_winet
+FOR EACH ROW
+EXECUTE FUNCTION check_user_activation();
+

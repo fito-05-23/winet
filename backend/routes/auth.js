@@ -1,8 +1,10 @@
 // routes/auth.js
 import express from 'express';
 import { body } from 'express-validator';
-import { register, login, refreshToken } from '../controllers/authController.js';
+import { register, login, activateAccount, refreshToken } from '../controllers/authController.js';
 import { verifyToken, checkRole } from '../middlewares/auth.js';
+import logger from '../utils/logger.js';
+import pool from '../config/db.js'; // Importa pool
 
 const router = express.Router();
 
@@ -31,6 +33,16 @@ router.post(
   login
 );
 
+// Ruta para activar la cuenta
+router.post(
+  '/activate',
+  [
+    body('email').isEmail().withMessage('Debe ser un correo válido'),
+    body('code').isLength({ min: 6, max: 6 }).withMessage('El código debe tener 6 dígitos'),
+  ],
+  activateAccount
+);
+
 router.post('/refresh', refreshToken);
 
 // Ruta Protegida /perfil
@@ -41,7 +53,7 @@ router.get(
     async (req, res) => {
       try {
         const userId = req.user.id;
-  
+
         const userResult = await pool.query('SELECT * FROM users WHERE id = \$1', [userId]);
         if (!userResult.rows.length) return res.status(404).json({ message: 'Usuario no encontrado' });
   

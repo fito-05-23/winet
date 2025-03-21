@@ -35,3 +35,17 @@ Este proyecto utiliza módulos **ES6** para gestionar las importaciones y export
 ✅ Ahora los registros y logins están mejor protegidos.
 
 Con esta mejora, evitamos que usuarios ingresen datos incorrectos, lo que previene errores y posibles vulnerabilidades. 🚀
+
+**Resumen del Flujo**
+
+1.**Registro**: El usuario se registra con is_active = FALSE.
+
+2.**Activación**: El usuario activa su cuenta usando un código de activación.
+
+3.**Inicio de Sesión**: El usuario inicia sesión solo si su cuenta está activa.
+
+4.**Refresco de Token**: El usuario puede refrescar su token de acceso.
+
+5.**Revisión de Perfil**: El usuario puede ver su perfil si está autenticado y tiene un rol válido.
+
+
