@@ -1,7 +1,7 @@
 // routes/auth.js
 import express from 'express';
 import { body } from 'express-validator';
-import { register, login, activateAccount, refreshToken } from '../controllers/authController.js';
+import { register, login, activateAccount, activateUserAccount, refreshToken } from '../controllers/authController.js';
 import { verifyToken, checkRole } from '../middlewares/auth.js';
 import logger from '../utils/logger.js';
 import pool from '../config/db.js'; // Importa pool
@@ -41,6 +41,17 @@ router.post(
     body('code').isLength({ min: 6, max: 6 }).withMessage('El código debe tener 6 dígitos'),
   ],
   activateAccount
+);
+
+router.post(
+  '/activate-account',
+  verifyToken,
+  checkRole(['admin', 'user', 'operador']),
+  [
+    body('email').isEmail().withMessage('Debe ser un correo válido'),
+    body('idcliente').notEmpty().withMessage('El id de clinte es obligatorio'),
+  ],
+  activateUserAccount
 );
 
 router.post('/refresh', refreshToken);

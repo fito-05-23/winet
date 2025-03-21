@@ -23,6 +23,7 @@ CREATE TABLE public.users (
   provider_id VARCHAR(100),
   role_id INTEGER,
   is_active BOOLEAN NOT NULL DEFAULT FALSE, -- Indica si el usuario ha activado su cuenta
+  activate_account BOOLEAN NOT NULL DEFAULT FALSE,
   created_at TIMESTAMP NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
   FOREIGN KEY (role_id) REFERENCES public.roles(id) ON DELETE SET NULL
@@ -169,16 +170,32 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION check_user_activation()
 RETURNS TRIGGER AS $$
 BEGIN
-  -- Verificar si el usuario está activo
-  IF NOT EXISTS (SELECT 1 FROM users WHERE id = NEW.id_user AND is_active = TRUE) THEN
-    RAISE EXCEPTION 'El usuario debe estar activado antes de ser cliente_winet';
+  -- Verificar si el usuario está activo y tiene activate_account = TRUE
+  IF NOT EXISTS (
+    SELECT 1 
+    FROM users 
+    WHERE id = NEW.id_user 
+      AND is_active = TRUE 
+      AND activate_account = TRUE
+  ) THEN
+    RAISE EXCEPTION 'El usuario debe estar activado y tener activate_account = TRUE antes de ser cliente_winet';
   END IF;
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER trg_check_user_activation
-BEFORE INSERT OR UPDATE ON public.clientes_winet
-FOR EACH ROW
-EXECUTE FUNCTION check_user_activation();
+CREATE OR REPLACE FUNCTION activate_user_account(p_user_id INTEGER)
+RETURNS BOOLEAN AS $$
+BEGIN
+  -- Verificar si el usuario existe
+  IF NOT EXISTS (SELECT 1 FROM users WHERE id = p_user_id) THEN
+    RETURN FALSE;
+  END IF;
+
+  -- Activar activate_account
+  UPDATE users SET activate_account = TRUE WHERE id = p_user_id;
+
+  RETURN TRUE;
+END;
+$$ LANGUAGE plpgsql;
 
