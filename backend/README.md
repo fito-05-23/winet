@@ -31,7 +31,6 @@ Se usa las convenciones de nomenclatura de Sequelize, que incluyen el uso de nom
 
 **helmet**: Para mejorar la seguridad de la API.
 
-![Important]
 # Arquitectura de Modelos en Sequelize
 
 **Modelos Individuales:** User.js, Role.js, ClientesWinet.js etc.
@@ -48,6 +47,8 @@ Se usa las convenciones de nomenclatura de Sequelize, que incluyen el uso de nom
 server.js importa los modelos y configuraciones
 Establece la conexión a la base de datos
 Configura las relaciones entre modelos
+
+# Uso de encriptación de contraseñas 
 
 **Se validan los datos de entrada en routes/auth.js con express-validator.**
 ✅ Si hay errores, se devuelven antes de ejecutar la lógica.
