@@ -103,3 +103,13 @@ Esto indica que la cuenta del usuario ha sido activada correctamente.
 El servidor devuelve una respuesta JSON con:
 Un mensaje de éxito: "Cuenta activada con éxito. Cliente creado.".
 Los datos del cliente creado en la tabla clientes_winet.
+
+> .[!IMPORANT]
+> REESTABLECER CONTRASEÑA
+
+**Flujo General de Restablecimiento de Contraseña**
+**1**. **Solicitud de Restablecimiento:** El usuario solicita el restablecimiento de su contraseña proporcionando su correo electrónico.
+**2**. Generación y Almacenamiento de Token: Se genera un token de restablecimiento único y se almacena en la base de datos asociado al usuario.
+**3**. **Envío de Correo de Restablecimiento:** Se envía un correo electrónico al usuario con un enlace que contiene el token.
+**4**. **Confirmación de Restablecimiento:** El usuario accede al enlace, proporciona una nueva contraseña y confirma el cambio.
+**5**. **Actualización de Contraseña:** La contraseña del usuario se actualiza en la base de datos.
