@@ -104,7 +104,7 @@ El servidor devuelve una respuesta JSON con:
 Un mensaje de éxito: "Cuenta activada con éxito. Cliente creado.".
 Los datos del cliente creado en la tabla clientes_winet.
 
-.[!IMPORANT]
+[!TIP]
 REESTABLECER CONTRASEÑA
 
 **Flujo General de Restablecimiento de Contraseña**
