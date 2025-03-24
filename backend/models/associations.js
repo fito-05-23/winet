@@ -1,3 +1,4 @@
+// models/association.js
 import User from './User.js';
 import Role from './Role.js';
 
