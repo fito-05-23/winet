@@ -105,7 +105,7 @@ Un mensaje de éxito: "Cuenta activada con éxito. Cliente creado.".
 Los datos del cliente creado en la tabla clientes_winet.
 
 [!TIP]
-REESTABLECER CONTRASEÑA
+# REESTABLECER CONTRASEÑA
 
 **Flujo General de Restablecimiento de Contraseña**
 **1**. **Solicitud de Restablecimiento:** El usuario solicita el restablecimiento de su contraseña proporcionando su correo electrónico.
