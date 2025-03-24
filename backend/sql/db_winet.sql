@@ -53,6 +53,16 @@ CREATE TABLE public.refresh_tokens (
   FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE
 );
 
+-- Tabla para almacenar tokens de restablecimiento de contraseña
+CREATE TABLE public.password_reset_tokens (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER NOT NULL,
+  token VARCHAR(255) UNIQUE NOT NULL,
+  expires_at TIMESTAMP NOT NULL DEFAULT NOW() + INTERVAL '1 hour',
+  created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE
+);
+
 CREATE TABLE public.clientes_winet (
   id SERIAL PRIMARY KEY,
   id_user INTEGER NOT NULL,

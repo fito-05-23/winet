@@ -1,5 +1,5 @@
 // controllers/userController.js
-import User from '../models/user.js';
+import User from '../models/User.js';
 import logger from '../logger.js'; // Importar el logger
 
 export const createUser = async (req, res) => {

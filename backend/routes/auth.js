@@ -3,8 +3,9 @@ import express from 'express';
 import { body } from 'express-validator';
 import { register, login, activateAccount, activateUserAccount, refreshToken } from '../controllers/authController.js';
 import { verifyToken, checkRole } from '../middlewares/auth.js';
+import { resetPasswordRequest, resetPasswordConfirm } from '../controllers/authController.js';
+import { User, Role } from '../models/index.js'; // Importamos los modelos de Sequelize
 import logger from '../utils/logger.js';
-import pool from '../config/db.js'; // Importa pool
 
 const router = express.Router();
 
@@ -46,7 +47,6 @@ router.post(
 router.post(
   '/activate-account',
   verifyToken,
-  checkRole(['admin', 'user', 'operador']),
   [
     body('email').isEmail().withMessage('Debe ser un correo válido'),
     body('idcliente').notEmpty().withMessage('El id de clinte es obligatorio'),
@@ -56,33 +56,63 @@ router.post(
 
 router.post('/refresh', refreshToken);
 
+// Ruta para solicitar el restablecimiento de contraseña
+router.post(
+  '/reset-password-request',
+  [
+    body('email').isEmail().withMessage('Debe ser un correo válido'),
+  ],
+  resetPasswordRequest
+);
+
+// Ruta para confirmar el restablecimiento de contraseña
+router.post(
+  '/reset-password-confirm',
+  [
+    body('token').notEmpty().withMessage('El token es obligatorio'),
+    body('newPassword').isLength({ min: 6 }).withMessage('La contraseña debe tener al menos 6 caracteres'),
+  ],
+  resetPasswordConfirm
+);
+
 // Ruta Protegida /perfil
 router.get(
-    '/perfil',
-    verifyToken,
-    checkRole(['admin', 'user', 'operador']),
-    async (req, res) => {
-      try {
-        const userId = req.user.id;
+  '/perfil',
+  verifyToken,
+  checkRole(['admin', 'user', 'operador']),
+  async (req, res) => {
+    try {
+      const userId = req.user.id;
 
-        const userResult = await pool.query('SELECT * FROM users WHERE id = \$1', [userId]);
-        if (!userResult.rows.length) return res.status(404).json({ message: 'Usuario no encontrado' });
-  
-        const user = userResult.rows[0];
-        const userInfo = {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          role: user.role,
-        };
-  
-        res.json({ user: userInfo });
-      } catch (error) {
-        logger.error(`Error al obtener el perfil del usuario: ${error.message}`);
-        res.status(500).json({ message: 'Error en el servidor' });
+      // Buscar el usuario con Sequelize e incluir el rol
+      const user = await User.findOne({
+        where: { id: userId },
+        include: {
+          model: Role,
+          as: 'role', // Debe coincidir con el alias definido en las asociaciones
+          attributes: ['name'], // Solo obtenemos el nombre del rol
+        },
+        attributes: ['id', 'email', 'name'], // Definimos qué atributos queremos retornar
+      });
+
+      if (!user) {
+        return res.status(404).json({ message: 'Usuario no encontrado' });
       }
+
+      const userInfo = {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role ? user.role.name : null, // Si no tiene rol, se asigna null
+      };
+
+      res.json({ user: userInfo });
+    } catch (error) {
+      logger.error(`❌ Error al obtener el perfil del usuario: ${error.message}`);
+      res.status(500).json({ message: 'Error en el servidor' });
     }
-  );
+  }
+);
   
 export default router;
 

@@ -4,6 +4,9 @@
 
 Este proyecto utiliza módulos **ES6** para gestionar las importaciones y exportaciones de código JavaScript. Esto se configura mediante la propiedad "type": "module" en el archivo package.json. A continuación, se detalla cómo funciona y por qué se ha elegido esta configuración.
 
+# IMPORTANTE
+Se usa las convenciones de nomenclatura de Sequelize, que incluyen el uso de nombres en plural para las tablas y nombres en singular para los modelos.
+
 # Configuración del Proyecto
 
 **express**: Framework para crear la API.
@@ -104,12 +107,16 @@ El servidor devuelve una respuesta JSON con:
 Un mensaje de éxito: "Cuenta activada con éxito. Cliente creado.".
 Los datos del cliente creado en la tabla clientes_winet.
 
-[!TIP]
 # REESTABLECER CONTRASEÑA
 
 **Flujo General de Restablecimiento de Contraseña**
+
 **1**. **Solicitud de Restablecimiento:** El usuario solicita el restablecimiento de su contraseña proporcionando su correo electrónico.
+
 **2**. Generación y Almacenamiento de Token: Se genera un token de restablecimiento único y se almacena en la base de datos asociado al usuario.
+
 **3**. **Envío de Correo de Restablecimiento:** Se envía un correo electrónico al usuario con un enlace que contiene el token.
+
 **4**. **Confirmación de Restablecimiento:** El usuario accede al enlace, proporciona una nueva contraseña y confirma el cambio.
+
 **5**. **Actualización de Contraseña:** La contraseña del usuario se actualiza en la base de datos.
