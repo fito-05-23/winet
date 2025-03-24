@@ -25,24 +25,8 @@ const Role = sequelize.define('Role', {
     defaultValue: DataTypes.NOW,
   },
 }, {
-  tableName: 'Roles',
+  tableName: 'roles',
   timestamps: false,
-});
-
-Role.associate = (models) => {
-  Role.hasMany(models.User, {
-    foreignKey: 'role_id',
-    as: 'users'
-  });
-};
-
-Role.beforeCreate((role) => {
-  role.created_at = new Date();
-  role.updated_at = new Date();
-});
-
-Role.beforeUpdate((role) => {
-  role.updated_at = new Date();
 });
 
 export default Role;

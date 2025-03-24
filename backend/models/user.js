@@ -55,23 +55,4 @@ const User = sequelize.define('User', {
   timestamps: false,
 });
 
-// Definir la relación con Roles
-User.associate = (models) => {
-  User.belongsTo(models.Role, {
-    foreignKey: 'role_id',
-    as: 'role',
-    onDelete: 'SET NULL' // Esto coincide con tu FOREIGN KEY en PostgreSQL
-  });
-};
-
-// Hooks para manejar las fechas
-User.beforeCreate((user) => {
-  user.created_at = new Date();
-  user.updated_at = new Date();
-});
-
-User.beforeUpdate((user) => {
-  user.updated_at = new Date();
-});
-
 export default User;

@@ -1,3 +1,4 @@
+// /middlewares/auth.js
 import jwt from 'jsonwebtoken';
 import logger from '../utils/logger.js';
 import User from '../models/User.js';  // Asegúrate de que ambos modelos estén exportados
