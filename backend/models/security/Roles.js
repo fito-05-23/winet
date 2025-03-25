@@ -1,7 +1,7 @@
-// models/Roles.js
+// models/securuty/Roles.js
 
-import { DataTypes } from 'sequelize';
-import sequelize from '../config/db.js';
+import { DataTypes } from "sequelize";
+import sequelize from '../../config/db.js';
 
 const Role = sequelize.define('Role', {
   id: {

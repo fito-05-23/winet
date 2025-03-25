@@ -1,12 +1,12 @@
-// controllers/authController.js
+// controllers/auth/authController.js
 import axios from 'axios';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { validationResult } from 'express-validator';
-import User from '../models/User.js';
-import PasswordResetToken from '../models/PasswordResetToken.js';
-import ClienteWinet from '../models/ClienteWinetModel.js';
-import logger from '../utils/logger.js';
+import User from '../../models/users/Users.js';
+import PasswordResetToken from '../../models/auth/PasswordResetToken.js';
+import ClienteWinet from '../../models/clients/ClienteWinetModel.js';
+import logger from '../../utils/logger.js';
 
 // Función para generar access token
 const generateAccessToken = (user) => {

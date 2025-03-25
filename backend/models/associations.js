@@ -1,47 +1,48 @@
 // models/association.js
-import User from "./Users.js";
-import Role from "./Roles.js";
-import PasswordResetToken from "./PasswordResetToken.js";
-import ClienteWinet from "./clienteWinetModel.js";
+import User from "./users/Users.js";
+import Role from "./security/Roles.js";
+import PasswordResetToken from "./auth/PasswordResetToken.js";
+import ClienteWinet from "./clients/ClienteWinetModel.js";
+import Permission from "./security/Permission.js";
+import UserSession from "./users/UserSession.js";
+import UserActivity from "./users/UserActivity.js";
+import logger from "../utils/logger.js";
 
 // En models/association.js
 export function setupAssociations() {
   // Relaciones existentes (User ↔ Role)
   User.belongsTo(Role, {
     foreignKey: "role_id",
-    as: "role",
+    as: "userAssignedRole",
     onDelete: "SET NULL",
   });
-  Role.hasMany(User, { foreignKey: "role_id", as: "users" });
+  Role.hasMany(User, { foreignKey: "role_id", as: "roleUsers" });
 
   // Nueva relación User ↔ ClienteWinet
   User.hasOne(ClienteWinet, { foreignKey: "id_user", as: "cliente" });
   ClienteWinet.belongsTo(User, { foreignKey: "id_user", as: "usuario" });
 
-  // Relación User ↔ PasswordResetToken (mejor centralizada aquí)
-  User.hasMany(PasswordResetToken, {
-    foreignKey: "user_id",
-    as: "passwordResetTokens",
-  });
-  PasswordResetToken.belongsTo(User, { foreignKey: "user_id", as: "user" });
-
+  // Relaciones de permisos
   Role.belongsToMany(Permission, {
     through: "RolePermissions",
     foreignKey: "role_id",
-    as: "permissions",
+    as: "rolePermissions",
   });
 
   Permission.belongsToMany(Role, {
     through: "RolePermissions",
     foreignKey: "permission_id",
-    as: "roles",
   });
 
-  UserSession.belongsTo(User, { foreignKey: "user_id", as: "user" });
+  UserSession.belongsTo(User, { foreignKey: "user_id", as: "sessionUser" });
   User.hasMany(UserSession, { foreignKey: "user_id", as: "sessions" });
-
-  UserActivity.belongsTo(User, { foreignKey: "user_id", as: "user" });
+  
+  UserActivity.belongsTo(User, { foreignKey: "user_id", as: "activityUser" });
   User.hasMany(UserActivity, { foreignKey: "user_id", as: "activities" });
+
+  // Relación User ↔ PasswordResetToken (mejor centralizada aquí)
+  PasswordResetToken.belongsTo(User, { foreignKey: "user_id", as: "resetUser" });
+  User.hasMany(PasswordResetToken, { foreignKey: "user_id", as: "passwordResetTokens" }); 
 
   logger.info("✅ Asociaciones establecidas");
 }

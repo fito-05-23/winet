@@ -1,6 +1,6 @@
 // models/Permission.js (para permisos más granulares)
 import { DataTypes } from "sequelize";
-import sequelize from "../config/db.js";
+import sequelize from '../../config/db.js';
 
 const Permission = sequelize.define(
   "Permission",

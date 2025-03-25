@@ -4,8 +4,8 @@ import cors from 'cors';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
 import logger from './utils/logger.js';  
-import clientsRoutes from './routes/clientesRoutes.js';
-import authRoutes from './routes/auth.js';
+import clientsRoutes from './routes/clients/clientesRoutes.js';
+import authRoutes from './routes/auth/auth.js';
 import errorHandler from './middlewares/errorHandler.js';
 
 dotenv.config();

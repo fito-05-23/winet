@@ -1,6 +1,6 @@
-// routes/clients.js
+// routes/clients/clientesRoutes.js
 import express from 'express';
-import clientController from '../controllers/clientController.js';
+import clientController from '../../controllers/clients/clientController.js';
 
 const router = express.Router();
 

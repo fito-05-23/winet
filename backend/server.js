@@ -1,8 +1,8 @@
 import app from './app.js';
 import logger from './utils/logger.js';
 import sequelize from './config/db.js';
-import { setupAssociations } from './models/index.js'; // Importación directa
-import models from './models/index.js';
+import { models } from './models/index.js'; // Importación corregida
+import { setupAssociations } from './models/associations.js'; // Asegúrate de que esta importación es correcta
 
 const PORT = process.env.PORT || 3000;
 

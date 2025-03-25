@@ -1,11 +1,12 @@
-// routes/auth.js
+// routes/auth/auth.js
+
 import express from 'express';
 import { body } from 'express-validator';
-import { register, login, activateAccount, activateUserAccount, refreshToken } from '../controllers/authController.js';
-import { verifyToken, checkRole } from '../middlewares/auth.js';
-import { resetPasswordRequest, resetPasswordConfirm } from '../controllers/authController.js';
-import { User, Role } from '../models/index.js'; // Importamos los modelos de Sequelize
-import logger from '../utils/logger.js';
+import { register, login, activateAccount, activateUserAccount, refreshToken, resetPasswordRequest, resetPasswordConfirm } from '../../controllers/auth/authController.js';
+import { verifyToken, checkRole } from '../../middlewares/auth.js';
+import User from '../../models/users/Users.js';
+import Role from '../../models/security/Roles.js';
+import logger from '../../utils/logger.js';
 
 const router = express.Router();
 

@@ -1,8 +1,8 @@
 // /middlewares/auth.js
 import jwt from 'jsonwebtoken';
 import logger from '../utils/logger.js';
-import User from '../models/User.js';  // Asegúrate de que ambos modelos estén exportados
-import Role from '../models/Role.js';
+import User from '../models/users/Users.js';  // Asegúrate de que ambos modelos estén exportados
+import Role from '../models/security/Roles.js';
 
 export const verifyToken = (req, res, next) => {
   const token = req.header('Authorization')?.split(' ')[1];

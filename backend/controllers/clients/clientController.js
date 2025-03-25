@@ -1,6 +1,6 @@
 // controllers/clientController.js
 import axios from 'axios';
-import logger from '../utils/logger.js'; // Importar el logger de Winston
+import logger from '../../utils/logger.js'; // Importar el logger de Winston
 
 const getClientStatus = async (req, res, next) => {
   // Log de la solicitud
