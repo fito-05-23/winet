@@ -37,5 +37,11 @@ export function setupAssociations() {
     as: "roles",
   });
 
+  UserSession.belongsTo(User, { foreignKey: "user_id", as: "user" });
+  User.hasMany(UserSession, { foreignKey: "user_id", as: "sessions" });
+
+  UserActivity.belongsTo(User, { foreignKey: "user_id", as: "user" });
+  User.hasMany(UserActivity, { foreignKey: "user_id", as: "activities" });
+
   logger.info("✅ Asociaciones establecidas");
 }

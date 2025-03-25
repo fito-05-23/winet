@@ -49,29 +49,11 @@ const ClienteWinet = sequelize.define('ClienteWinet', {
   direccion_principal: {
     type: DataTypes.TEXT,
   },
-  created_at: {
-    type: DataTypes.DATE,
-    defaultValue: DataTypes.NOW,
-  },
-  updated_at: {
-    type: DataTypes.DATE,
-    defaultValue: DataTypes.NOW,
-  },
+  createdAt: 'created_at',
+  updatedAt: 'updated_at',
 }, {
   tableName: 'clientes_winet',
-  timestamps: false, // Desactiva los campos createdAt y updatedAt automáticos de Sequelize
-  // Si deseas usar los campos created_at y updated_at personalizados, puedes usar hooks para manejarlos
-  // o configurar Sequelize para usar tus propios nombres de columna
-});
-
-// Sincronizar los campos created_at y updated_at personalizados
-ClienteWinet.beforeCreate((cliente, options) => {
-  cliente.created_at = new Date();
-  cliente.updated_at = new Date();
-});
-
-ClienteWinet.beforeUpdate((cliente, options) => {
-  cliente.updated_at = new Date();
+  timestamps: true, 
 });
 
 export default ClienteWinet;

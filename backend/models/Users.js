@@ -13,10 +13,14 @@ const User = sequelize.define('User', {
     type: DataTypes.STRING,
     unique: true,
     allowNull: false,
+    index: true
   },
   password_hash: {
     type: DataTypes.STRING,
     allowNull: false,
+    validate: {
+      len: [60, 255], // Un hash bcrypt es de 60 caracteres
+    },
   },
   name: {
     type: DataTypes.STRING,
@@ -44,17 +48,13 @@ const User = sequelize.define('User', {
     allowNull: false,
     defaultValue: false,
   },
-  created_at: {
-    type: DataTypes.DATE,
-    defaultValue: DataTypes.NOW,
-  },
-  updated_at: {
-    type: DataTypes.DATE,
-    defaultValue: DataTypes.NOW,
-  },
+  paranoid: true,
+  deletedAt: 'deleted_at',
+  createdAt: 'created_at',
+  updatedAt: 'updated_at',
 }, {
   tableName: 'users',
-  timestamps: false,
+  timestamps: true,
 });
 
 export default User;
