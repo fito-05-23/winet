@@ -1,25 +1,26 @@
-import sequelize from '../config/db.js';
+// models/index.js
+import sequelize from './config/db.js';
+import { setupAssociations } from './associations.js';
+
 import User from './User.js';
 import Role from './Role.js';
+import ClienteWinet from './ClienteWinet.js';
+import PasswordResetToken from './PasswordResetToken.js';
+import UserSession from './UserSession.js';
+import UserActivity from './UserActivity.js';
+import Permission from './Permission.js';
 
-// Configuración de relaciones
-function setupAssociations() {
-  User.belongsTo(Role, { foreignKey: 'role_id', as: 'role', onDelete: 'SET NULL' });
-  Role.hasMany(User, { foreignKey: 'role_id', as: 'users' });
-}
-
-// Exportaciones nombradas
-export {
-  sequelize,
+const models = {
   User,
   Role,
-  setupAssociations
+  ClienteWinet,
+  PasswordResetToken,
+  UserSession,
+  UserActivity,
+  Permission
 };
 
-// Opcional: Exportación por defecto
-export default {
-  sequelize,
-  User,
-  Role,
-  setupAssociations
-};
+// Establecer relaciones
+setupAssociations();
+
+export { sequelize, models };

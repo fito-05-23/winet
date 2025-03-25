@@ -1,4 +1,5 @@
 // models/ClienteWinet.js
+
 import { DataTypes } from 'sequelize';
 import sequelize from '../config/db.js';
 
@@ -57,6 +58,7 @@ const ClienteWinet = sequelize.define('ClienteWinet', {
     defaultValue: DataTypes.NOW,
   },
 }, {
+  tableName: 'clientes_winet',
   timestamps: false, // Desactiva los campos createdAt y updatedAt automáticos de Sequelize
   // Si deseas usar los campos created_at y updated_at personalizados, puedes usar hooks para manejarlos
   // o configurar Sequelize para usar tus propios nombres de columna

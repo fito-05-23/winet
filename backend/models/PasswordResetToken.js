@@ -19,6 +19,7 @@ const PasswordResetToken = sequelize.define('PasswordResetToken', {
     allowNull: false,
   },
 }, {
+  tableName: 'password_reset_token',
   timestamps: false,
 });
 
