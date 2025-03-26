@@ -2,7 +2,7 @@
 
 import express from 'express';
 import { body } from 'express-validator';
-import { register, login, activateAccount, activateUserAccount, refreshToken, resetPasswordRequest, resetPasswordConfirm } from '../../controllers/auth/authController.js';
+import { register, login, activateAccount, activateUserAccount, refreshToken } from '../../controllers/auth/authController.js';
 import { verifyToken, checkRole } from '../../middlewares/auth.js';
 import User from '../../models/users/Users.js';
 import Role from '../../models/security/Roles.js';
@@ -56,25 +56,6 @@ router.post(
 );
 
 router.post('/refresh', refreshToken);
-
-// Ruta para solicitar el restablecimiento de contraseña
-router.post(
-  '/reset-password-request',
-  [
-    body('email').isEmail().withMessage('Debe ser un correo válido'),
-  ],
-  resetPasswordRequest
-);
-
-// Ruta para confirmar el restablecimiento de contraseña
-router.post(
-  '/reset-password-confirm',
-  [
-    body('token').notEmpty().withMessage('El token es obligatorio'),
-    body('newPassword').isLength({ min: 6 }).withMessage('La contraseña debe tener al menos 6 caracteres'),
-  ],
-  resetPasswordConfirm
-);
 
 // Ruta Protegida /perfil
 router.get(
