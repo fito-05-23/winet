@@ -8,6 +8,7 @@ import clientsRoutes from './routes/clients/clientesRoutes.js';
 import authRoutes from './routes/auth/auth.js';
 import errorHandler from './middlewares/errorHandler.js';
 import passwordResetRoutes from './routes/auth/passwordReset.js';
+import tiendasRoutes from './routes/stores/storesRoutes.js';
 
 dotenv.config();
 
@@ -41,6 +42,7 @@ app.get('/', (req, res) => {
 app.use('/api/client', clientsRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/reset-password', passwordResetRoutes);
+app.use('/api/stores', tiendasRoutes);  // Esto es crucial
 
 // Middleware de manejo de errores (debe ir al final)
 app.use(errorHandler);

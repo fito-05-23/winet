@@ -9,6 +9,7 @@ import PasswordResetToken from './auth/PasswordResetToken.js';
 import UserSession from './users/UserSession.js';
 import UserActivity from './users/UserActivity.js';
 import Permission from './security/Permission.js';
+import Tienda from './stores/Stores.js';
 
 const models = {
   User,
@@ -17,7 +18,8 @@ const models = {
   PasswordResetToken,
   UserSession,
   UserActivity,
-  Permission
+  Permission,
+  Tienda
 };
 
 // Establecer relaciones

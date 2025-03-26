@@ -6,6 +6,7 @@ import ClienteWinet from "./clients/ClienteWinetModel.js";
 import Permission from "./security/Permission.js";
 import UserSession from "./users/UserSession.js";
 import UserActivity from "./users/UserActivity.js";
+import Tienda from "./stores/Stores.js";
 import logger from "../utils/logger.js";
 
 // En models/association.js
@@ -78,6 +79,18 @@ export function setupAssociations() {
     foreignKey: "user_id",
     as: "resetTokens", // Alias único
   });
+
+    // Relación ClienteWinet ↔ Tienda
+    ClienteWinet.hasMany(Tienda, {
+      foreignKey: 'id_cliente',
+      as: 'tiendas',
+      onDelete: 'CASCADE'
+    });
+    
+    Tienda.belongsTo(ClienteWinet, {
+      foreignKey: 'id_cliente',
+      as: 'cliente'
+    });
 
   logger.info("✅ Asociaciones establecidas");
 }
