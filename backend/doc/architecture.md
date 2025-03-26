@@ -3,36 +3,48 @@ winet/
 │   ├──config/
 │   │   └── db.js
 │   ├──controllers/   # funciones que manejan las solicitudes HTTP 
-│   │   ├── authController.js
-│   │   ├── userController.js
-│   │   ├── clienteWinetController.js
-│   │   ├── tiendaController.js
-│   │   ├── pagoController.js
-│   │   ├── puntoController.js
-│   │   └── transaccionPuntoController.js
+│   │   ├──auth/ 
+│   │   │   ├── authController.js
+│   │   ├──clients/ 
+│   │   │   ├── clientController.js
+│   │   ├──users/ 
+│   │   │   ├── usersController.js
 │   ├──doc/           # Documentación del proyecto
+│   ├──logs/           
+│   │   ├── combined.js
+│   │   ├── error.js
 │   ├──middlewares/   # Funciones que tienen acceso al objeto de solicitud (request)
 │   │   ├── auth.js
 │   │   ├── errorHandler.js
+│   │   ├── rateLimit.js
+│   │   ├── securityHeaders.js
 ├── ├──models/         # Estructura de datos y la lógica de negocio de la aplicación 
-│   │   ├── auth.js
-│   │   ├── user.js
-│   │   ├── clienteWinet.js
-│   │   ├── tienda.js
-│   │   ├── pago.js
-│   │   ├── punto.js
-│   │   └── transaccionPunto.js
+│   │   ├──auth/ 
+│   │   │   ├── ActivationCode.js
+│   │   │   ├── PasswordResetToken.js
+│   │   │   ├── RefresToken.js
+│   │   ├──clients/ 
+│   │   │   ├── ClienteWinetModel.js
+│   │   security/ 
+│   │   │   ├── Permission.js
+│   │   │   ├── Roles.js
+│   │   ├──users/ 
+│   │   │   ├── UserActivity.js
+│   │   │   ├── Users.js
+│   │   │   ├── UserSession.js
+│   │   ├── associations.js
+│   │   ├── index.js
 │   ├──routes/        # Controlador de solicitud entrante basada en el método HTTP 
-│   │   ├── userRoutes.js
-│   │   ├── clienteWinetRoutes.js
-│   │   ├── tiendaRoutes.js
-│   │   ├── pagoRoutes.js
-│   │   ├── puntoRoutes.js
-│   │   └── transaccionPuntoRoutes.js
+│   │   ├──auth/ 
+│   │   │   ├── auth.js
+│   │   ├──clients/ 
+│   │   │   ├── clientesRoutes.js
+│   │   ├──users/ 
+│   │   │   ├── userRoutes.js
 │   ├──sql/           # Sentencias SQL  
 │   ├──utils/
+│   │   └── logger.js
 ├── .env
 ├── .gitignore
-├── API-RESTFull Winet.json
 ├── app.js             # Configuración de la aplicación
 └── server.js          # Arranque del servidor

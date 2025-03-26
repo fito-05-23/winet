@@ -30,10 +30,10 @@ export const checkRole = (roles) => async (req, res, next) => {
       where: { id: userId },
       include: {
         model: Role,
-        as: 'role', // Coincide con el alias en User.associate()
-        attributes: ['name'],
+        as: "role",  // 🔥 Debe coincidir con el alias cambiado
+        attributes: ["name"],
       },
-    });
+    });   
 
     if (!user) {
       return res.status(404).json({ message: 'Usuario no encontrado' });

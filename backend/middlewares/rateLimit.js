@@ -8,5 +8,5 @@ export const authLimiter = rateLimit({
 });
 
 // Usar en rutas sensibles
-router.post('/login', authLimiter, [...validations], login);
-router.post('/reset-password-request', authLimiter, [...validations], resetPasswordRequest);
+// router.post('/login', authLimiter, [...validations], login);
+// router.post('/reset-password-request', authLimiter, [...validations], resetPasswordRequest);

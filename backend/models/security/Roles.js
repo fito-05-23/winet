@@ -16,12 +16,11 @@ const Role = sequelize.define('Role', {
   },
   description: {
     type: DataTypes.TEXT,
-  },
-  createdAt: 'created_at',
-  updatedAt: 'updated_at',
+  }
 }, {
   tableName: 'roles',
   timestamps: true,
+  underscored: true, // Sequelize manejará created_at y updated_at automáticamente
 });
 
 export default Role;

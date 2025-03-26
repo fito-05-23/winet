@@ -36,7 +36,7 @@ const User = sequelize.define('User', {
   },
   role_id: {
     type: DataTypes.INTEGER,
-    allowNull: true, // Permite null por el ON DELETE SET NULL
+    allowNull: true,
   },
   is_active: {
     type: DataTypes.BOOLEAN,
@@ -47,14 +47,13 @@ const User = sequelize.define('User', {
     type: DataTypes.BOOLEAN,
     allowNull: false,
     defaultValue: false,
-  },
-  paranoid: true,
-  deletedAt: 'deleted_at',
-  createdAt: 'created_at',
-  updatedAt: 'updated_at',
+  }
 }, {
   tableName: 'users',
   timestamps: true,
+  paranoid: true, // Para el soft delete
+  deletedAt: 'deleted_at',
+  underscored: true, // 🔹 Sequelize manejará created_at y updated_at automáticamente
 });
 
 export default User;

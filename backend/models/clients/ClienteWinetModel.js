@@ -1,5 +1,3 @@
-// models/ClienteWinet.js
-
 import { DataTypes } from 'sequelize';
 import sequelize from '../../config/db.js';
 
@@ -49,11 +47,10 @@ const ClienteWinet = sequelize.define('ClienteWinet', {
   direccion_principal: {
     type: DataTypes.TEXT,
   },
-  createdAt: 'created_at',
-  updatedAt: 'updated_at',
 }, {
   tableName: 'clientes_winet',
   timestamps: true, 
+  underscored: true,  // 🔹 Sequelize manejará created_at y updated_at automáticamente
 });
 
 export default ClienteWinet;

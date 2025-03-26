@@ -90,11 +90,11 @@ router.get(
         where: { id: userId },
         include: {
           model: Role,
-          as: 'role', // Debe coincidir con el alias definido en las asociaciones
-          attributes: ['name'], // Solo obtenemos el nombre del rol
+          as: 'role',  // 🔥 Ahora coincide con la asociación
+          attributes: ['name'],
         },
-        attributes: ['id', 'email', 'name'], // Definimos qué atributos queremos retornar
-      });
+        attributes: ['id', 'email', 'name'],
+      });     
 
       if (!user) {
         return res.status(404).json({ message: 'Usuario no encontrado' });
