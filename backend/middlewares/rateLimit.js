@@ -6,7 +6,3 @@ export const authLimiter = rateLimit({
   max: 20, // Límite de peticiones
   message: 'Demasiados intentos, por favor intente más tarde'
 });
-
-// Usar en rutas sensibles
-// router.post('/login', authLimiter, [...validations], login);
-// router.post('/reset-password-request', authLimiter, [...validations], resetPasswordRequest);

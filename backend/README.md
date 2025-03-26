@@ -31,6 +31,8 @@ Se usa las convenciones de nomenclatura de Sequelize, que incluyen el uso de nom
 
 **helmet**: Para mejorar la seguridad de la API.
 
+**express-rate-limit**: Controlar los intentos de login, reestablecer contraseña etc
+
 # Arquitectura de Modelos en Sequelize
 
 **Modelos Individuales:** User.js, Role.js, ClientesWinet.js etc.

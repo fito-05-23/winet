@@ -4,6 +4,7 @@ import express from 'express';
 import { body } from 'express-validator';
 import { handlePasswordResetRequest , processPasswordReset  } from '../../controllers/auth/passwordResetController.js';
 import { verifyToken, checkRole } from '../../middlewares/auth.js';
+import { authLimiter } from '../../middlewares/rateLimit.js';
 import logger from '../../utils/logger.js';
 
 const router = express.Router();
@@ -12,7 +13,7 @@ const router = express.Router();
 router.post(
   '/request',
   verifyToken,
-  
+  authLimiter,  
   [
     body('email').isEmail().withMessage('Debe ser un correo válido'),
   ],

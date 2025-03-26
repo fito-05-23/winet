@@ -4,6 +4,7 @@ import express from 'express';
 import { body } from 'express-validator';
 import { register, login, activateAccount, activateUserAccount, refreshToken } from '../../controllers/auth/authController.js';
 import { verifyToken, checkRole } from '../../middlewares/auth.js';
+import { authLimiter } from '../../middlewares/rateLimit.js';
 import User from '../../models/users/Users.js';
 import Role from '../../models/security/Roles.js';
 import logger from '../../utils/logger.js';
@@ -28,6 +29,7 @@ router.post(
 // Validaciones para el login
 router.post(
   '/login',
+  authLimiter,
   [
     body('email').isEmail().withMessage('Debe ser un correo válido'),
     body('password').notEmpty().withMessage('La contraseña es obligatoria'),
