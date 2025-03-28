@@ -1,8 +1,9 @@
-// controllers/clientController.js
+// controllers/clients/clientController.js
 import axios from 'axios';
+import ClienteWinet from '../../models/clients/ClienteWinetModel.js';
 import logger from '../../utils/logger.js'; // Importar el logger de Winston
 
-const getClientStatus = async (req, res, next) => {
+export const getClientStatus = async (req, res, next) => {
   // Log de la solicitud
   logger.info(`Solicitud recibida: ${req.method} ${req.url}`);
   logger.info(`Body recibido: ${JSON.stringify(req.body)}`);
@@ -41,4 +42,25 @@ const getClientStatus = async (req, res, next) => {
   }
 };
 
-export default { getClientStatus };
+export const getUserProfile = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    // Buscar el cliente asociado al usuario
+    const cliente = await ClienteWinet.findOne({
+      where: { id_user: userId },
+      attributes: ['id', 'idcliente', 'nombre', 'estado', 'correo', 'telefono', 'movil', 'cedula', 'pasarela', 'codigo', 'direccion_principal'],
+    });
+
+    if (!cliente) {
+      logger.warn(`Cliente no encontrado para el usuario con ID: ${userId}`);
+      return res.status(404).json({ message: 'Cliente no encontrado' });
+    }
+
+    res.json({ cliente });
+  } catch (error) {
+    logger.error(`❌ Error al obtener el perfil del cliente: ${error.message}`);
+    res.status(500).json({ message: 'Error en el servidor' });
+  }
+};
+

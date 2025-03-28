@@ -36,13 +36,13 @@ export function setupAssociations() {
 
   // Relaciones de permisos
   Role.belongsToMany(Permission, {
-    through: "RolePermissions",
+    through: "role_permissions",
     foreignKey: "role_id",
     as: "permissions", // Alias único
   });
 
   Permission.belongsToMany(Role, {
-    through: "RolePermissions",
+    through: "role_permissions",
     foreignKey: "permission_id",
     as: "rolesWithPermission", // Alias único
   });

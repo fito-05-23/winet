@@ -36,14 +36,37 @@ export const verifyClientStatus = async (req, res, next) => {
     // 4. Verificar estado del cliente
     if (response.data.estado !== 'exito' || 
         !response.data.datos || 
-        response.data.datos[0]?.estado !== 'ACTIVO') {
-      logger.warn('Cliente no activo', { 
+        !response.data.datos[0]?.estado) {
+      logger.warn('Datos de cliente incompletos o estado no válido', { 
         cliente: idCliente, 
-        estado: response.data.datos[0]?.estado 
+        estado: response.data?.estado 
       });
       return res.status(403).json({ 
         error: 'Cliente no está activo en MikroSystem' 
       });
+    }
+
+    const estadoCliente = response.data.datos[0].estado;
+
+    switch (estadoCliente) {
+      case 'ACTIVO':
+        // Cliente activo, continuar con la operación
+        break;
+      case 'SUSPENDIDO':
+        logger.warn('Cliente suspendido', { cliente: idCliente });
+        return res.status(403).json({ 
+          error: 'Cuenta suspendida. Para poder operar con la aplicación Winet, debe regular su situación.' 
+        });
+      case 'RETIRADO':
+        logger.warn('Cliente retirado', { cliente: idCliente });
+        return res.status(403).json({ 
+          error: 'Cuenta retirada. No se puede proceder con la operación en la aplicación Winet.' 
+        });
+      default:
+        logger.warn('Estado de cliente desconocido', { cliente: idCliente, estado: estadoCliente });
+        return res.status(403).json({ 
+          error: 'Estado de cliente desconocido.' 
+        });
     }
 
     // 5. Almacenar datos del cliente para uso posterior

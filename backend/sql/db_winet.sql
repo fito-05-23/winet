@@ -66,8 +66,9 @@ CREATE TABLE public.password_reset_tokens (
 CREATE TABLE public.clientes_winet (
   id SERIAL PRIMARY KEY,
   id_user INTEGER NOT NULL,
+  idcliente INTEGER NOT NULL,
   nombre VARCHAR(100) NOT NULL,
-  estado VARCHAR(20) NOT NULL CHECK (estado IN ('activo', 'inactivo', 'suspendido')),
+  estado VARCHAR(20) NOT NULL,
   correo VARCHAR(255),
   telefono VARCHAR(20),
   movil VARCHAR(20),

@@ -11,6 +11,10 @@ const ClienteWinet = sequelize.define('ClienteWinet', {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
+  idcliente: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
   nombre: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -18,9 +22,6 @@ const ClienteWinet = sequelize.define('ClienteWinet', {
   estado: {
     type: DataTypes.STRING,
     allowNull: false,
-    validate: {
-      isIn: [['activo', 'inactivo', 'suspendido']],
-    },
   },
   correo: {
     type: DataTypes.STRING,

@@ -6,9 +6,11 @@ import dotenv from 'dotenv';
 import logger from './utils/logger.js';  
 import clientsRoutes from './routes/clients/clientesRoutes.js';
 import authRoutes from './routes/auth/auth.js';
+import userRoutes from './routes/users/userRoutes.js';
 import errorHandler from './middlewares/errorHandler.js';
 import passwordResetRoutes from './routes/auth/passwordReset.js';
 import tiendasRoutes from './routes/stores/storesRoutes.js';
+import profileRoutes from './routes/profile/profileRoutes.js'
 
 dotenv.config();
 
@@ -40,6 +42,8 @@ app.get('/', (req, res) => {
 
 // Rutas
 app.use('/api/client', clientsRoutes);
+app.use('/api/profile', profileRoutes);
+app.use('/api/user', userRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/reset-password', passwordResetRoutes);
 app.use('/api/stores', tiendasRoutes);  // Esto es crucial
