@@ -1,85 +1,155 @@
 import axios from 'axios';
 import logger from '../utils/logger.js';
+import ClienteWinet from '../models/clients/ClienteWinetModel.js';
 
 export const verifyClientStatus = async (req, res, next) => {
-  try {
-    // 1. Verificar autenticación básica
-    if (!req.user) {
-      logger.warn('Intento de acceso no autenticado a gestión de tiendas');
-      return res.status(401).json({ error: 'No autenticado' });
-    }
+  // Función auxiliar dentro del middleware
+  const getStatusMessage = (estado) => {
+    const messages = {
+      'ACTIVO': 'Cuenta activa',
+      'SUSPENDIDO': 'Cuenta suspendida. Para poder operar con la aplicación Winet, debe regular su situación.',
+      'RETIRADO': 'Cuenta retirada. No se puede proceder con la operación en la aplicación Winet.',
+      'NO_RESPONSE': 'No se pudo verificar el estado con MikroSystem',
+      'API_ERROR': 'Error al conectar con el sistema de verificación',
+      'INACTIVO': 'Cuenta inactiva en el sistema local' // Nuevo estado agregado
+    };
+    return messages[estado] || 'Estado de cuenta no reconocido';
+  };
 
-    // 2. Obtener ID del cliente desde el token o parámetros según tu implementación
-    const idCliente = req.params.id_cliente || req.body.id_cliente;
-    if (!idCliente) {
-      logger.warn('Falta id_cliente en la solicitud', { user: req.user.id });
-      return res.status(400).json({ error: 'Se requiere id_cliente' });
-    }
+  // Función auxiliar dentro del middleware
+  const checkMikrosystemStatus = async (idCliente) => {
+    try {
+      const response = await axios.post(
+        `${process.env.MIKROSYSTEM_API}${process.env.DETAILS_CLIENTS}`,
+        {
+          token: process.env.TOKEN_MIKROSYSTEM,
+          idcliente: idCliente
+        },
+        {
+          headers: { 'Content-Type': 'application/json' },
+          timeout: 5000
+        }
+      );
 
-    // 3. Consultar API externa
-    const response = await axios.post(
-      `${process.env.MIKROSYSTEM_API}${process.env.DETAILS_CLIENTS}`,
-      {
-        token: process.env.TOKEN_MIKROSYSTEM,
-        idcliente: idCliente
-      },
-      {
-        headers: { 'Content-Type': 'application/json' }
+      logger.debug('Respuesta completa de MikroSystem:', { 
+        data: response.data 
+      });
+
+      if (!response.data || response.data.estado !== 'exito' || !response.data.datos?.[0]?.estado) {
+        return { 
+          isActive: false, 
+          estado: 'NO_RESPONSE', 
+          data: null,
+          rawResponse: response?.data 
+        };
       }
-    );
 
-    logger.info('Respuesta API MikroSystem', { 
-      cliente: idCliente, 
-      estado: response.data?.estado 
+      return {
+        isActive: response.data.datos[0].estado === 'ACTIVO',
+        estado: response.data.datos[0].estado,
+        data: response.data.datos[0],
+        rawResponse: response.data
+      };
+    } catch (error) {
+      logger.error('Error en consulta a MikroSystem:', {
+        error: error.message,
+        response: error.response?.data,
+        config: error.config
+      });
+      return { 
+        isActive: false, 
+        estado: 'API_ERROR', 
+        data: null,
+        errorDetails: error.message 
+      };
+    }
+  };
+
+  try {
+    // 1. Verificar autenticación
+    if (!req.user || !req.user.id) {
+      logger.error('Usuario no autenticado o sin ID', { user: req.user });
+      return res.status(401).json({ 
+        code: 'UNAUTHENTICATED',
+        error: 'No autenticado' 
+      });
+    }
+
+    logger.debug('Iniciando verificación para usuario:', { 
+      userId: req.user.id 
     });
 
-    // 4. Verificar estado del cliente
-    if (response.data.estado !== 'exito' || 
-        !response.data.datos || 
-        !response.data.datos[0]?.estado) {
-      logger.warn('Datos de cliente incompletos o estado no válido', { 
-        cliente: idCliente, 
-        estado: response.data?.estado 
+    // 2. Obtener perfil del cliente
+    const cliente = await ClienteWinet.findOne({
+      where: { id_user: req.user.id },
+      attributes: ['id', 'idcliente', 'nombre', 'estado', 'correo']
+    });
+
+    if (!cliente) {
+      logger.warn('No se encontró cliente para el usuario:', { 
+        userId: req.user.id 
       });
       return res.status(403).json({ 
-        error: 'Cliente no está activo en MikroSystem' 
+        code: 'NOT_A_CLIENT',
+        error: 'No tienes permisos para esta acción' 
       });
     }
 
-    const estadoCliente = response.data.datos[0].estado;
+    logger.debug('Datos del cliente encontrado:', { 
+      cliente: cliente.get({ plain: true }) 
+    });
 
-    switch (estadoCliente) {
-      case 'ACTIVO':
-        // Cliente activo, continuar con la operación
-        break;
-      case 'SUSPENDIDO':
-        logger.warn('Cliente suspendido', { cliente: idCliente });
-        return res.status(403).json({ 
-          error: 'Cuenta suspendida. Para poder operar con la aplicación Winet, debe regular su situación.' 
-        });
-      case 'RETIRADO':
-        logger.warn('Cliente retirado', { cliente: idCliente });
-        return res.status(403).json({ 
-          error: 'Cuenta retirada. No se puede proceder con la operación en la aplicación Winet.' 
-        });
-      default:
-        logger.warn('Estado de cliente desconocido', { cliente: idCliente, estado: estadoCliente });
-        return res.status(403).json({ 
-          error: 'Estado de cliente desconocido.' 
-        });
+    // 3. Verificar estado local
+    if (cliente.estado !== 'ACTIVO') {
+      const errorMessage = getStatusMessage(cliente.estado);
+      logger.warn('Estado local no activo:', { 
+        estado: cliente.estado,
+        message: errorMessage
+      });
+      return res.status(403).json({
+        code: 'LOCAL_ACCOUNT_INACTIVE',
+        error: errorMessage,
+        estado: cliente.estado,
+        clienteId: cliente.id
+      });
     }
 
-    // 5. Almacenar datos del cliente para uso posterior
-    req.clientData = response.data.datos[0];
-    next();
+    // 4. Verificar estado en MikroSystem
+    const mikrosystemStatus = await checkMikrosystemStatus(cliente.idcliente);
+    
+    logger.debug('Resultado de MikroSystem:', mikrosystemStatus);
 
+    if (!mikrosystemStatus.isActive) {
+      const errorMessage = getStatusMessage(mikrosystemStatus.estado);
+      logger.warn('Estado en MikroSystem no activo:', {
+        estado: mikrosystemStatus.estado,
+        message: errorMessage
+      });
+      return res.status(403).json({
+        code: 'MIKROSYSTEM_ACCOUNT_INACTIVE',
+        error: errorMessage,
+        status: mikrosystemStatus.estado,
+        details: process.env.NODE_ENV === 'development' ? mikrosystemStatus.rawResponse : undefined
+      });
+    }
+
+    // 5. Adjuntar datos para siguientes middlewares
+    req.clientData = {
+      ...cliente.get({ plain: true }),
+      mikrosystemData: mikrosystemStatus.data
+    };
+    
+    next();
   } catch (error) {
-    logger.error('Error en verificación de cliente', {
+    logger.error('Error crítico en verifyClientStatus:', {
       error: error.message,
-      stack: error.stack
+      stack: error.stack,
+      userId: req.user?.id
     });
     return res.status(500).json({ 
-      error: 'Error al verificar estado del cliente' 
+      code: 'SERVER_ERROR',
+      error: 'Error al verificar estado del cliente',
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }
 };

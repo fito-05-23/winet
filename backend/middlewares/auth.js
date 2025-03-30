@@ -8,15 +8,33 @@ export const verifyToken = (req, res, next) => {
   const token = req.header('Authorization')?.split(' ')[1];
 
   if (!token) {
+    logger.warn('Acceso denegado. No hay token.', { headers: req.headers });
     return res.status(401).json({ message: 'Acceso denegado. No hay token.' });
   }
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded; // Guarda el usuario en `req.user`
+    
+    // Asegurarnos que el token tenga los datos mínimos requeridos
+    if (!decoded.id) {
+      logger.warn('Token no contiene ID de usuario', { decoded });
+      return res.status(401).json({ message: 'Token inválido: falta ID de usuario' });
+    }
+
+    // Guardar datos relevantes en req.user
+    req.user = {
+      id: decoded.id,
+      role: decoded.role,
+      // Agrega otros campos necesarios
+    };
+    
+    logger.debug('Token verificado correctamente', { userId: decoded.id });
     next();
   } catch (error) {
-    logger.warn('❌ Token inválido');
+    logger.error('Error al verificar token', {
+      error: error.message,
+      token: token.substring(0, 10) + '...' // Log parcial del token por seguridad
+    });
     res.status(401).json({ message: 'Token inválido' });
   }
 };

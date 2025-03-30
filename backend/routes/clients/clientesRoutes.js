@@ -1,6 +1,6 @@
 // routes/clients/clientesRoutes.js
 import express from "express";
-//import { clientController } from "../../controllers/clients/clientController.js";
+import { getClientStatus } from "../../controllers/clients/clientController.js";
 
 const router = express.Router();
 
@@ -10,5 +10,11 @@ router.get("/", (req, res) => {
     example: { token: "Smx2SVdkbUZIdjlCUlkxdFo1cUNMQT09", idcliente: "6" },
   });
 });
+
+// Ruta POST para consultar estado de cliente
+router.post(
+  "/status",
+  getClientStatus // Controlador principal
+);
 
 export default router;
