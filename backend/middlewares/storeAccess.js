@@ -2,7 +2,7 @@ import axios from 'axios';
 import cache from '../services/cacheService.js';
 import logger from '../utils/logger.js';
 import ClienteWinet from '../models/clients/ClienteWinetModel.js';
-import Tienda from '../../models/stores/Stores.js';
+import Tienda from '../models/stores/Stores.js';
 
 export const verifyClientStatus = async (req, res, next) => {
   // Función auxiliar para mensajes de estado
@@ -208,4 +208,11 @@ export const verifyStoreOwnership = async (req, res, next) => {
     });
     res.status(500).json({ error: 'Error al verificar propiedad' });
   }
+};
+
+export const verifyClientOwnership = async (req, res, next) => {
+  if (req.params.id_cliente && req.params.id_cliente != req.clientData.id) {
+    return res.status(403).json({ error: 'No autorizado' });
+  }
+  next();
 };
