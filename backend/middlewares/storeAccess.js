@@ -1,22 +1,24 @@
 import axios from 'axios';
+import cache from '../services/cacheService.js';
 import logger from '../utils/logger.js';
 import ClienteWinet from '../models/clients/ClienteWinetModel.js';
+import Tienda from '../../models/stores/Stores.js';
 
 export const verifyClientStatus = async (req, res, next) => {
-  // Función auxiliar dentro del middleware
+  // Función auxiliar para mensajes de estado
   const getStatusMessage = (estado) => {
-    const messages = {
+    const statusMessages = {
       'ACTIVO': 'Cuenta activa',
       'SUSPENDIDO': 'Cuenta suspendida. Para poder operar con la aplicación Winet, debe regular su situación.',
       'RETIRADO': 'Cuenta retirada. No se puede proceder con la operación en la aplicación Winet.',
       'NO_RESPONSE': 'No se pudo verificar el estado con MikroSystem',
       'API_ERROR': 'Error al conectar con el sistema de verificación',
-      'INACTIVO': 'Cuenta inactiva en el sistema local' // Nuevo estado agregado
+      'INACTIVO': 'Cuenta inactiva en el sistema local'
     };
-    return messages[estado] || 'Estado de cuenta no reconocido';
+    return statusMessages[estado] || 'Estado de cuenta no reconocido';
   };
 
-  // Función auxiliar dentro del middleware
+  // Función para verificar estado en MikroSystem
   const checkMikrosystemStatus = async (idCliente) => {
     try {
       const response = await axios.post(
@@ -31,7 +33,7 @@ export const verifyClientStatus = async (req, res, next) => {
         }
       );
 
-      logger.debug('Respuesta completa de MikroSystem:', { 
+      logger.debug('Respuesta de MikroSystem:', { 
         data: response.data 
       });
 
@@ -75,31 +77,45 @@ export const verifyClientStatus = async (req, res, next) => {
       });
     }
 
-    logger.debug('Iniciando verificación para usuario:', { 
-      userId: req.user.id 
-    });
+    const userId = req.user.id;
+    const cacheKey = `clientStatus:${userId}`;
 
-    // 2. Obtener perfil del cliente
+    logger.debug('Iniciando verificación para usuario:', { userId });
+
+    // 2. Verificar caché primero
+    const cachedData = await cache.get(cacheKey);
+    if (cachedData) {
+      logger.debug('Datos obtenidos de caché', { 
+        userId,
+        source: 'cache',
+        estado: cachedData.estado
+      });
+
+      if (cachedData.estado === 'ACTIVO') {
+        req.clientData = cachedData;
+        return next();
+      }
+      
+      // Si está en caché pero no está activo, continuar con verificación
+    }
+
+    // 3. Obtener datos del cliente desde DB
     const cliente = await ClienteWinet.findOne({
-      where: { id_user: req.user.id },
+      where: { id_user: userId },
       attributes: ['id', 'idcliente', 'nombre', 'estado', 'correo']
     });
 
     if (!cliente) {
-      logger.warn('No se encontró cliente para el usuario:', { 
-        userId: req.user.id 
-      });
+      logger.warn('Cliente no encontrado para el usuario:', { userId });
       return res.status(403).json({ 
         code: 'NOT_A_CLIENT',
         error: 'No tienes permisos para esta acción' 
       });
     }
 
-    logger.debug('Datos del cliente encontrado:', { 
-      cliente: cliente.get({ plain: true }) 
-    });
+    logger.debug('Datos del cliente encontrado:', cliente.get({ plain: true }));
 
-    // 3. Verificar estado local
+    // 4. Verificar estado local
     if (cliente.estado !== 'ACTIVO') {
       const errorMessage = getStatusMessage(cliente.estado);
       logger.warn('Estado local no activo:', { 
@@ -114,31 +130,39 @@ export const verifyClientStatus = async (req, res, next) => {
       });
     }
 
-    // 4. Verificar estado en MikroSystem
+    // 5. Verificar estado en MikroSystem
     const mikrosystemStatus = await checkMikrosystemStatus(cliente.idcliente);
     
     logger.debug('Resultado de MikroSystem:', mikrosystemStatus);
 
-    if (!mikrosystemStatus.isActive) {
-      const errorMessage = getStatusMessage(mikrosystemStatus.estado);
-      logger.warn('Estado en MikroSystem no activo:', {
-        estado: mikrosystemStatus.estado,
-        message: errorMessage
+    // 6. Preparar datos para respuesta y caché
+    const clientData = {
+      ...cliente.get({ plain: true }),
+      mikrosystemData: mikrosystemStatus.data,
+      estado: mikrosystemStatus.estado,
+      isActive: mikrosystemStatus.isActive,
+      lastUpdated: new Date().toISOString()
+    };
+
+    // 7. Manejo del caché
+    if (mikrosystemStatus.isActive) {
+      // Almacenar en caché solo si el estado es ACTIVO
+      await cache.set(cacheKey, clientData);
+      logger.debug('Datos almacenados en caché', { 
+        userId,
+        ttl: '300 segundos' 
       });
-      return res.status(403).json({
-        code: 'MIKROSYSTEM_ACCOUNT_INACTIVE',
-        error: errorMessage,
-        status: mikrosystemStatus.estado,
-        details: process.env.NODE_ENV === 'development' ? mikrosystemStatus.rawResponse : undefined
+    } else {
+      // Si no está activo, limpiar caché existente
+      await cache.delete(cacheKey);
+      logger.debug('Datos eliminados de caché por estado inactivo', { 
+        userId,
+        estado: mikrosystemStatus.estado 
       });
     }
 
-    // 5. Adjuntar datos para siguientes middlewares
-    req.clientData = {
-      ...cliente.get({ plain: true }),
-      mikrosystemData: mikrosystemStatus.data
-    };
-    
+    // 8. Adjuntar datos al request
+    req.clientData = clientData;
     next();
   } catch (error) {
     logger.error('Error crítico en verifyClientStatus:', {
@@ -157,7 +181,7 @@ export const verifyClientStatus = async (req, res, next) => {
 export const verifyStoreOwnership = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const idCliente = req.clientData?.id; // Del middleware anterior
+    const idCliente = req.clientData?.id;
 
     // Verificar que la tienda pertenece al cliente
     const store = await Tienda.findOne({ 
