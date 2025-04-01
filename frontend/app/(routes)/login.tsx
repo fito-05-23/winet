@@ -78,7 +78,7 @@ export default function Login() {
                     </TouchableOpacity>
                 </View>
                 {/* Enlace "Olvidé mi contraseña" */}
-                <Link href="/forgot-password" style={styles.forgotPassword}>
+                <Link href="/forgotPassword" style={styles.forgotPassword}>
                      Olvidé mi contraseña
                 </Link>
 
@@ -177,10 +177,8 @@ const styles = StyleSheet.create({
     forgotPassword: {
         alignSelf: 'flex-end',
         marginBottom: 20,
-    },
-    forgotPasswordText: {
-        color: '#101084',
         fontSize: 14,
+        color: '#666',
     },
     loginButton: {
         height: 50,

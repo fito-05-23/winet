@@ -35,8 +35,6 @@ export default function Signup() {
         // Lógica para enviar el registro
     };
 
-
-
     const isSubmitDisabled = !acceptedTerms || emailError || !email || !password;
 
     return (
@@ -103,7 +101,7 @@ export default function Signup() {
                     </TouchableOpacity>
                     <Text style={styles.termsText}>
                         Acepto haber leído las{' '}
-                        <Link href="/privacy-policy" style={styles.termsLink}>
+                        <Link href="/privacyPolicy" style={styles.termsLink}>
                             Políticas de privacidad
                         </Link>
                     </Text>
