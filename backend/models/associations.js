@@ -7,6 +7,9 @@ import Permission from "./security/Permission.js";
 import UserSession from "./users/UserSession.js";
 import UserActivity from "./users/UserActivity.js";
 import Tienda from "./stores/Stores.js";
+import Punto from "./stores/Puntos.js";
+import Pago from "./stores/Pagos.js";
+import TransaccionPunto from "./stores/TransaccionPuntos.js";
 import logger from "../utils/logger.js";
 
 // En models/association.js
@@ -91,6 +94,66 @@ export function setupAssociations() {
       foreignKey: 'id_cliente',
       as: 'cliente'
     });
+
+   // Relación Tienda ↔ Pago
+   Tienda.hasMany(Pago, {
+    foreignKey: 'id_tienda',
+    as: 'pagos',
+    onDelete: 'CASCADE'
+  });
+  
+  Pago.belongsTo(Tienda, {
+    foreignKey: 'id_tienda',
+    as: 'tienda'
+  });
+
+  // Relación ClienteWinet ↔ Pago (como pagador)
+  ClienteWinet.hasMany(Pago, {
+    foreignKey: 'id_cliente',
+    as: 'pagos_realizados',
+    onDelete: 'CASCADE'
+  });
+  
+  Pago.belongsTo(ClienteWinet, {
+    foreignKey: 'id_cliente',
+    as: 'cliente_pagador'
+  });
+
+  // Relación ClienteWinet ↔ Punto (Uno a Uno)
+  ClienteWinet.hasOne(Punto, {
+    foreignKey: 'id_cliente',
+    as: 'puntos',
+    onDelete: 'CASCADE'
+  });
+  
+  Punto.belongsTo(ClienteWinet, {
+    foreignKey: 'id_cliente',
+    as: 'cliente'
+  });
+
+  // Relación ClienteWinet ↔ TransaccionPunto
+  ClienteWinet.hasMany(TransaccionPunto, {
+    foreignKey: 'id_cliente',
+    as: 'transacciones_puntos',
+    onDelete: 'CASCADE'
+  });
+  
+  TransaccionPunto.belongsTo(ClienteWinet, {
+    foreignKey: 'id_cliente',
+    as: 'cliente'
+  });
+
+  // Relación Tienda ↔ TransaccionPunto
+  Tienda.hasMany(TransaccionPunto, {
+    foreignKey: 'id_tienda',
+    as: 'transacciones_puntos',
+    onDelete: 'CASCADE'
+  });
+  
+  TransaccionPunto.belongsTo(Tienda, {
+    foreignKey: 'id_tienda',
+    as: 'tienda'
+  });
 
   logger.info("✅ Asociaciones establecidas");
 }

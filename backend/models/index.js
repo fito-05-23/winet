@@ -10,6 +10,8 @@ import UserSession from './users/UserSession.js';
 import UserActivity from './users/UserActivity.js';
 import Permission from './security/Permission.js';
 import Tienda from './stores/Stores.js';
+import Punto from './stores/Puntos.js';
+import Pago from './stores/Pagos.js';
 
 const models = {
   User,
@@ -19,7 +21,9 @@ const models = {
   UserSession,
   UserActivity,
   Permission,
-  Tienda
+  Tienda,
+  Punto,
+  Pago
 };
 
 // Establecer relaciones

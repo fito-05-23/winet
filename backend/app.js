@@ -11,6 +11,7 @@ import errorHandler from './middlewares/errorHandler.js';
 import passwordResetRoutes from './routes/auth/passwordReset.js';
 import tiendasRoutes from './routes/stores/storesRoutes.js';
 import profileRoutes from './routes/profile/profileRoutes.js'
+import paymentRoutes from './routes/stores/transaccionRoutes.js'
 
 dotenv.config();
 
@@ -46,7 +47,8 @@ app.use('/api/profile', profileRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/reset-password', passwordResetRoutes);
-app.use('/api/stores', tiendasRoutes);  // Esto es crucial
+app.use('/api/stores', tiendasRoutes);  // Rutas de las Tiendas
+app.use('/api/payment', paymentRoutes);  // Rutas de transacciones
 
 // Middleware de manejo de errores (debe ir al final)
 app.use(errorHandler);
