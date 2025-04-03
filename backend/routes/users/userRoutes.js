@@ -5,6 +5,7 @@ import { body } from 'express-validator';
 import { login, activateUserAccount } from '../../controllers/users/userController.js';
 import { verifyToken, checkRole } from '../../middlewares/auth.js';
 import { authLimiter } from '../../middlewares/rateLimit.js';
+import { activityLogger, secureActivityLogger } from '../../middlewares/activityLogger.js';
 import logger from '../../utils/logger.js';
 
 const router = express.Router();
@@ -17,6 +18,7 @@ router.post(
     body('email').isEmail().withMessage('Debe ser un correo válido'),
     body('password').notEmpty().withMessage('La contraseña es obligatoria'),
   ],
+  secureActivityLogger, // Usamos la versión segura para no registrar contraseñas
   login
 );
 
@@ -27,6 +29,7 @@ router.post(
     body('email').isEmail().withMessage('Debe ser un correo válido'),
     body('idcliente').notEmpty().withMessage('El id de clinte es obligatorio'),
   ],
+  activityLogger, // Middleware de actividad normal
   activateUserAccount
 );
  

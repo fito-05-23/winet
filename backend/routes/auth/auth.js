@@ -3,11 +3,7 @@
 import express from 'express';
 import { body } from 'express-validator';
 import { register, activateAccount, refreshToken } from '../../controllers/auth/authController.js';
-import { verifyToken, checkRole } from '../../middlewares/auth.js';
-import { authLimiter } from '../../middlewares/rateLimit.js';
-import User from '../../models/users/Users.js';
-import Role from '../../models/security/Roles.js';
-import logger from '../../utils/logger.js';
+import { secureActivityLogger } from '../../middlewares/activityLogger.js';
 
 const router = express.Router();
 
@@ -33,6 +29,7 @@ router.post(
     body('email').isEmail().withMessage('Debe ser un correo válido'),
     body('code').isLength({ min: 6, max: 6 }).withMessage('El código debe tener 6 dígitos'),
   ],
+  secureActivityLogger, // No registrará el contenido de newPassword
   activateAccount
 );
 

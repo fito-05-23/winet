@@ -15,6 +15,7 @@ import {
   verifyStoreOwnership,
   verifyClientOwnership 
 } from '../../middlewares/storeAccess.js';
+import { secureActivityLogger } from '../../middlewares/activityLogger.js';
 import { authLimiter } from '../../middlewares/rateLimit.js';
 
 const router = express.Router();
@@ -34,6 +35,7 @@ router.post(
     body('telefono').optional().isString()
   ],
   verifyClientStatus,
+  secureActivityLogger,
   crearTienda
 );
 
@@ -45,6 +47,7 @@ router.get(
   ],
   verifyClientStatus,
   verifyClientOwnership, // Nuevo middleware
+  secureActivityLogger,
   obtenerTiendasPorCliente
 );
 
@@ -59,6 +62,7 @@ router.put(
   ],
   verifyClientStatus,
   verifyStoreOwnership,
+  secureActivityLogger,
   actualizarTienda
 );
 
@@ -70,6 +74,7 @@ router.delete(
   ],
   verifyClientStatus,
   verifyStoreOwnership,
+  secureActivityLogger,
   eliminarTienda
 );
 

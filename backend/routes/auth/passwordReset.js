@@ -3,9 +3,9 @@
 import express from 'express';
 import { body } from 'express-validator';
 import { handlePasswordResetRequest , processPasswordReset  } from '../../controllers/auth/passwordResetController.js';
-import { verifyToken, checkRole } from '../../middlewares/auth.js';
+import { verifyToken } from '../../middlewares/auth.js';
 import { authLimiter } from '../../middlewares/rateLimit.js';
-import logger from '../../utils/logger.js';
+import { secureActivityLogger } from '../../middlewares/activityLogger.js';
 
 const router = express.Router();
 
@@ -17,6 +17,7 @@ router.post(
   [
     body('email').isEmail().withMessage('Debe ser un correo válido'),
   ],
+  secureActivityLogger,
   handlePasswordResetRequest 
 );
 
@@ -32,6 +33,7 @@ router.post(
         .matches(/[A-Z]/).withMessage('La contraseña debe contener al menos una mayúscula')
         .matches(/[^a-zA-Z0-9]/).withMessage('La contraseña debe contener al menos un carácter especial'),
     ],
+    secureActivityLogger,
     processPasswordReset
   );
 

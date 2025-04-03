@@ -7,6 +7,7 @@ import { validationResult } from 'express-validator';
 import User from '../../models/users/Users.js';
 import PasswordResetToken from '../../models/auth/PasswordResetToken.js';
 import ClienteWinet from '../../models/clients/ClienteWinetModel.js';
+import UserSession from '../../models/users/UserSession.js';  
 import logger from '../../utils/logger.js';
 
 // Función para generar access token
@@ -47,6 +48,16 @@ export const login = async (req, res) => {
     const accessToken = generateAccessToken(user);
     const refreshToken = await generateRefreshToken(user);
 
+     // Crear sesión de usuario
+     await UserSession.create({
+      user_id: user.id,
+      token: refreshToken, // o accessToken según tu implementación
+      ip_address: req.ip,
+      user_agent: req.headers['user-agent'],
+      expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 días
+      is_active: true
+    });
+
     logger.info(`Inicio de sesión: ${email}`);
     res.json({ accessToken, refreshToken });
   } catch (error) {
@@ -69,6 +80,12 @@ export const logout = async (req, res) => {
     if (!tokenExists) {
       return res.status(400).json({ message: 'Refresh token no válido' });
     }
+
+    // Invalidar la sesión
+    await UserSession.update(
+      { is_active: false },
+      { where: { token: refreshToken } }
+    );
 
     // Invalidar el refresh token eliminando el registro de la base de datos
     await tokenExists.destroy();
