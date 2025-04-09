@@ -35,7 +35,8 @@ router.post(
       .isDecimal({ min: 0.01 })
       .withMessage("Monto debe ser un número positivo mayor a 0.01"),
   ],
-  verifyStoreOwnership, // Verifica que el usuario sea dueño de la tienda
+  verifyClientStatus, // 1. Verifica que el usuario que registra está activo
+  verifyStoreOwnership, // 2. Verifica que es dueño de la tienda
   secureActivityLogger,
   registrarPago
 );

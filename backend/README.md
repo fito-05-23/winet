@@ -140,3 +140,25 @@ Los datos del cliente creado en la tabla clientes_winet.
 **4**. **Confirmación de Restablecimiento:** El usuario accede al enlace, proporciona una nueva contraseña y confirma el cambio.
 
 **5**. **Actualización de Contraseña:** La contraseña del usuario se actualiza en la base de datos.
+
+# Flujo de gestión de las tiendas. Verificaciones, pagos y registro de puntos.
+
+**verifyToken:** Verifica que el usuario esté autenticado
+
+**verifyClientStatus:** Verifica que el usuario registrador esté activo
+
+**verifyStoreOwnership:** Verifica que el usuario es dueño de la tienda
+
+**En el controlador:**
+
+**1** Verifica que no sea auto-pago (nueva validación)
+
+**2** Verifica que el cliente pagador existe
+
+**3** Verifica que el cliente pagador esté activo (MikroSystem)
+
+**4** Registra el pago
+
+**5** Asigna puntos si corresponde
+
+**6** Retorna respuesta estructurada

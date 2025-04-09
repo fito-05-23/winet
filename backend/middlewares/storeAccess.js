@@ -180,13 +180,16 @@ export const verifyClientStatus = async (req, res, next) => {
 
 export const verifyStoreOwnership = async (req, res, next) => {
   try {
-    const { id } = req.params;
+    const idTienda = req.params.id || req.body.id_tienda;
     const idCliente = req.clientData?.id;
 
-    // Verificar que la tienda pertenece al cliente
+    if (!idTienda) {
+      return res.status(400).json({ error: 'ID de tienda no proporcionado' });
+    }
+
     const store = await Tienda.findOne({ 
       where: { 
-        id, 
+        id: idTienda, 
         id_cliente: idCliente 
       } 
     });
@@ -194,13 +197,15 @@ export const verifyStoreOwnership = async (req, res, next) => {
     if (!store) {
       logger.warn('Intento de acceso a tienda no propia', {
         user: req.user.id,
-        tienda: id
+        tienda: idTienda
       });
       return res.status(403).json({ 
         error: 'No tienes permisos sobre esta tienda' 
       });
     }
 
+    // Adjuntar la tienda al request para uso posterior
+    req.tienda = store;
     next();
   } catch (error) {
     logger.error('Error en verificación de propiedad', {
